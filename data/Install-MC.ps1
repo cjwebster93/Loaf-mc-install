@@ -18,8 +18,8 @@ If (Test-Path -Path $MCInstallerPath) {
     Start-Process $MCInstallerPath -Wait
 } else {
     Write-Host -ForegroundColor Yellow ("Minecraft Installer not found. Attempting to download now...")
-    Invoke-WebRequest -Uri $MCDownload -OutFile $MCInstallerPath -Verbose
-    Write-Host -ForegroundColor Green ("Download complete! Launching Installer`nClick throught the insttaller to continue.")
+    Invoke-WebRequest -Uri $MCDownload -OutFile $MCInstallerPath
+    Write-Host -ForegroundColor Green ("Download complete! Launching Installer`nClick throught the installer to continue.")
     Start-Process $MCInstallerPath -Wait
 }
     
