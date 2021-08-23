@@ -69,8 +69,7 @@ function CopyMods {
     )
     Write-Host -ForegroundColor Yellow ("Copying $mods.Count mods...")
     foreach ($mod in $mods) {
-        $mod = $mod.Name
-        Copy-Item -Path $ModsSourcePath\$mod -Destination $ModsInstallPath\$mod -Force
+        Copy-Item -Path $ModsSourcePath\$mod -Destination $ModsInstallPath -Force -Verbose
     }
     
 }
@@ -97,6 +96,7 @@ StopMC
 ### Mods to be installed below ###
 
 $ModList = Get-ChildItem $ModsSourcePath -Filter *.jar | Select-Object Name
+$ModList = $ModList.Name
 
 $exitMenuLoop=$false
 while (-Not $exitMenuLoop) {
@@ -108,7 +108,7 @@ while (-Not $exitMenuLoop) {
             #Install Mods
             Write-Host ("Installing mods...")
             Copy-Item -Path "$ModsSourcePath\*.jar" -Destination $ModsInstallPath -Force -Verbose
-            #CopyMods -ModList $ModList.Name
+            #CopyMods -ModList $ModList
             $exitMenuLoop = $TRUE
          }
     
