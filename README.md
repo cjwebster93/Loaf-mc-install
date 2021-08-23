@@ -8,7 +8,7 @@ Script to assist in installing the correct components to join the modded LOAF Mi
 **TODO**
 - [x] Download and install base Minecraft game
 - [x] Download and install *specific* Forge addon
-- [ ] Install required modpacks
+- [x] Install required modpacks
 
 It *does* require user interaction where the 3rd-party files don't appear to have any silent functions.
 
