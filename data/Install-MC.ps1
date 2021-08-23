@@ -17,7 +17,8 @@ $MCVer = "1.12.2"
 $ForgeDownload = "https://maven.minecraftforge.net/net/minecraftforge/forge/1.12.2-14.23.5.2855/forge-1.12.2-14.23.5.2855-installer.jar"
 $ForgePath = ".\packages\forge-1.12.2-14.23.5.2855-installer.jar"
 
-$ModsPath = "%appdata%\.minecraft\mods"
+$ModsSourcePath = ".\packages\Mods"
+$ModsInstallPath = "$env:APPDATA\.minecraft\mods"
 
 ### Modules ###
 Import-Module BitsTransfer
@@ -62,6 +63,18 @@ function StopMC {
     }      
 }
 
+function CopyMods {
+    param (
+        $ModList = $ModList
+    )
+    Write-Host -ForegroundColor Yellow ("Copying $mods.Count mods...")
+    foreach ($mod in $mods) {
+        $mod = $mod.Name
+        Copy-Item -Path $ModsSourcePath\$mod -Destination $ModsInstallPath\$mod -Force
+    }
+    
+}
+
 
 ### MAIN SCRIPT ###
 
@@ -77,7 +90,36 @@ StartMC
 StopMC
 AquireFile -Name "Forge $MCVer" -URL $ForgeDownload -Output $ForgePath
 Start-Process $ForgePath -Wait
-Write-Host -BackgroundColor Yellow -ForegroundColor Red ("Go ahead and launch the game, the come back to this to continue :)`nMake sure you launch Forge")
+Write-Host -BackgroundColor Yellow -ForegroundColor Red ("Go ahead and launch the game, then come back to this to continue :)`nMake sure you launch Forge")
 StartMC
+StopMC
 
 ### Mods to be installed below ###
+
+$ModList = Get-ChildItem $ModsSourcePath -Filter *.jar | Select-Object Name
+
+$exitMenuLoop=$false
+while (-Not $exitMenuLoop) {
+    $last = Read-Host -Prompt "Do you want to install the following mods? (Y/N - Default is Y)`n$ModList"
+    
+    # I intended for the mod install to be a bit more sophisticated, but was having issues with the variables.
+    switch ($last) {
+        'Y' { 
+            #Install Mods
+            Write-Host ("Installing mods...")
+            Copy-Item -Path "$ModsSourcePath\*.jar" -Destination $ModsInstallPath -Force -Verbose
+            #CopyMods -ModList $ModList.Name
+            $exitMenuLoop = $TRUE
+         }
+    
+         'N' {
+             Write-Host ("Skipping Mod install")
+             $exitMenuLoop = $TRUE
+         }
+         
+        
+    }
+
+}
+
+
