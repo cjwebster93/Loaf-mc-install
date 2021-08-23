@@ -1,6 +1,6 @@
 <#
 
-Script to assist in installing the correct components to join the modded LAOF Minecraft server.
+Script to assist in installing the correct components to join the modded LOAF Minecraft server.
 
 It does require user interaction where the 3rd-party files don't appear to have any silent functions.
 
