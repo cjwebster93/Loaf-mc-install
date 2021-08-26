@@ -8,6 +8,9 @@ Written by Craig Webster
 
 #>
 
+#Parameters
+param ([switch] $ForgeOnly=$false)
+
 #Variables
 $MCLauncher = "C:\Program Files (x86)\Minecraft Launcher\MinecraftLauncher.exe"
 $MCInstallerPath = ".\packages\MinecraftInstaller.msi"
@@ -98,32 +101,14 @@ StopMC
 
 ### Mods to be installed below ###
 
-$ModList = Get-ChildItem $ModsSourcePath -Filter *.jar | Select-Object Name
-$ModList = $ModList.Name
+If (!$ForgeOnly) {
+    $ModList = Get-ChildItem $ModsSourcePath -Filter *.jar | Select-Object Name
+    $ModList = $ModList.Name
+    $exitMenuLoop=$false
 
-$exitMenuLoop=$false
-while (-Not $exitMenuLoop) {
-    $last = Read-Host -Prompt "Do you want to install the following mods? (Y/N - Default is Y)"
-    
-    # I intended for the mod install to be a bit more sophisticated, but was having issues with the variables.
-    switch ($last) {
-        'Y' { 
-            #Install Mods
-            Write-Host ("Installing mods...")
-            CopyMods -ModList $ModList
-            $exitMenuLoop = $TRUE
-         }
-    
-         'N' {
-             Write-Host ("Skipping Mod install")
-             $exitMenuLoop = $TRUE
-         }
 
-         Default {$last = 'Y'}
-         
-        
+    Write-Host ("Installing mods...")
+    CopyMods -ModList $ModList
     }
-
-}
-
+    
 Write-Host -ForegroundColor Green ("INSTALLATION COMPLETE! :)")
