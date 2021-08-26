@@ -18,7 +18,7 @@ $ForgeDownload = "https://maven.minecraftforge.net/net/minecraftforge/forge/1.12
 $ForgePath = ".\packages\forge-1.12.2-14.23.5.2855-installer.jar"
 
 $ModsSourcePath = ".\packages\Mods"
-$ModsInstallPath = "$env:APPDATA\.minecraft\mods"
+$ModsInstallPath = "$env:APPDATA\.minecraft\mods\"
 
 ### Modules ###
 Import-Module BitsTransfer
@@ -67,9 +67,10 @@ function CopyMods {
     param (
         $ModList = $ModList
     )
-    Write-Host -ForegroundColor Yellow ("Copying $mods.Count mods...")
-    foreach ($mod in $mods) {
-        Copy-Item -Path $ModsSourcePath\$mod -Destination $ModsInstallPath -Force -Verbose
+    Write-Host -ForegroundColor Yellow ("Copying $($ModList.Count) mods...")
+    foreach ($mod in $ModList) {
+        Write-Host -ForegroundColor Yellow ("Copying $mod...")
+        Copy-Item -Path $ModsSourcePath\$mod -Destination $ModsInstallPath -Force
     }
     
 }
@@ -82,14 +83,16 @@ AquireFile -Name 'Minecraft' -URL $MCDownload -Output $MCInstallerPath
 Start-Process $MCInstallerPath -Wait
 
 #Minecraft has to be launched for it to full populate the %appdata%\.minecraft directory    
-Write-Host -BackgroundColor Yellow -ForegroundColor Red ("Start the Minecraft Launcher and finish installing Minecraft.")
+Write-Host -BackgroundColor Yellow -ForegroundColor Red `
+("Start the Minecraft Launcher and finish installing Minecraft.")
 StartMC
 
 #Install Forge
 StopMC
 AquireFile -Name "Forge $MCVer" -URL $ForgeDownload -Output $ForgePath
 Start-Process $ForgePath -Wait
-Write-Host -BackgroundColor Yellow -ForegroundColor Red ("Go ahead and launch the game, then come back to this to continue :)`nMake sure you launch Forge")
+Write-Host -BackgroundColor Yellow -ForegroundColor Red `
+("Go ahead and launch the game, then come back to this to continue :)`nMake sure you launch Forge")
 StartMC
 StopMC
 
@@ -100,15 +103,14 @@ $ModList = $ModList.Name
 
 $exitMenuLoop=$false
 while (-Not $exitMenuLoop) {
-    $last = Read-Host -Prompt "Do you want to install the following mods? (Y/N - Default is Y)`n$ModList"
+    $last = Read-Host -Prompt "Do you want to install the following mods? (Y/N - Default is Y)"
     
     # I intended for the mod install to be a bit more sophisticated, but was having issues with the variables.
     switch ($last) {
         'Y' { 
             #Install Mods
             Write-Host ("Installing mods...")
-            Copy-Item -Path "$ModsSourcePath\*.jar" -Destination $ModsInstallPath -Force -Verbose
-            #CopyMods -ModList $ModList
+            CopyMods -ModList $ModList
             $exitMenuLoop = $TRUE
          }
     
@@ -116,10 +118,12 @@ while (-Not $exitMenuLoop) {
              Write-Host ("Skipping Mod install")
              $exitMenuLoop = $TRUE
          }
+
+         Default {$last = 'Y'}
          
         
     }
 
 }
 
-
+Write-Host -ForegroundColor Green ("INSTALLATION COMPLETE! :)")
